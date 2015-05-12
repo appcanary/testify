@@ -2,13 +2,14 @@ package mock
 
 import (
 	"fmt"
-	"github.com/stretchr/objx"
-	"github.com/stretchr/testify/assert"
 	"reflect"
 	"runtime"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/stretchr/objx"
+	"github.com/stretchr/testify/assert"
 )
 
 // TestingT is an interface wrapper around *testing.T
@@ -302,6 +303,8 @@ func AssertExpectationsForObjects(t TestingT, testObjects ...interface{}) bool {
 // AssertExpectations asserts that everything specified with On and Return was
 // in fact called as expected.  Calls may have occurred in any order.
 func (m *Mock) AssertExpectations(t TestingT) bool {
+	defer m.mutex.Unlock()
+	m.mutex.Lock()
 
 	var somethingMissing bool = false
 	var failedExpectations int = 0
